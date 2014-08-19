@@ -23,12 +23,12 @@
 class GPS {
     
 public:
+    inline GPS(SoftwareSerial * ts);
     inline GPS();
+    
+    int read();
     int parseData();
-    int parseGGA();//0
-    int parseGSA();//1
-    int parseRMC();//2
-    int parseVTG();//3
+    int parseData(char* thisBuffer);
     
     uint8_t getYear();
     uint8_t getMonth();
@@ -61,6 +61,11 @@ public:
     double getVerticalDilution();
 
 private:
+    int parseGGA();//0
+    int parseGSA();//1
+    int parseRMC();//2
+    int parseVTG();//3
+    
     int getField(int field,const char* buffer_in,char* buffer_out,const int o_length);
     int getCommaPos(const int number,const char* buffer_in,char*& pos);
     int strcmp(const char* str1,const char* str2);
@@ -70,9 +75,12 @@ private:
     inline uint8_t exp10(int);
     inline int char2dec(char);
     inline bool isLegalFigure(char);
+    inline int flushSerial();
     
     char* msgBuffer;
     const char* head[4];
+    char serialBuffer[120];
+    SoftwareSerial *thisSerial;
     
     //for RMC
     //UTC time

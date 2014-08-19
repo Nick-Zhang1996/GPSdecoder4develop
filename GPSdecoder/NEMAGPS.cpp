@@ -8,7 +8,19 @@
 
 #include "NEMAGPS.h"
 
+GPS::GPS(SoftwareSerial * ts){
+    thisSerial=ts;
+    msgBuffer=serialBuffer;
+    *head="$GPGGA";
+    *(head+1)="$GPGSA";
+    *(head+2)="$GPRMC";
+    *(head+3)="$GPVTG";
+    //i'm chinese
+    timezone=8;
+}
+
 GPS::GPS(){
+    thisSerial=NULL;
     msgBuffer=NULL;
     *head="$GPGGA";
     *(head+1)="$GPGSA";
@@ -16,6 +28,33 @@ GPS::GPS(){
     *(head+3)="$GPVTG";
     //i'm chinese
     timezone=8;
+}
+
+int GPS::read(){
+  //this need to be run at a high frequency, for the buffer length of SoftwareSerial port is only 64 bytes, which is relativly short since NEMA sentence is about 100 bytes
+    
+    if (thisSerial==NULL) {
+        return -2;
+    }
+    if (!thisSerial->available()) {
+        return -1;
+    }
+            
+            
+    //potential bug
+    if (thisSerial->peek()!='$') {
+        flushSerial;
+    }
+            
+    int i=0;
+    while (thisSerial->available()) {
+        *(msgBuffer+i)=thisSerial->read();
+        i++;
+    }
+    
+    parseData();
+    
+    
 }
 
 int GPS::parseGGA(){
@@ -121,6 +160,30 @@ int GPS::parseGSA(){
 }
 
 int GPS::parseData(){
+    if (msgBuffer==NULL) {
+        return 1;
+    }
+    
+    //actual length is 7
+    char temp[8];
+    getField(0, msgBuffer, temp, 8);
+    
+    if (strcmp(temp, "$GPGGA")) {
+        parseGGA();
+    }   else if (strcmp(temp, "$GPGSA")){
+        parseGSA();
+    }   else if (strcmp(temp, "$GPRMC")){
+        parseRMC();
+    }   else if (strcmp(temp, "$GPVTG")){
+        parseVTG();
+    }   else {return 1;}//unknown header
+    
+    return 0;
+    
+}
+
+int GPS::parseData(char* thisBuffer){
+    msgBuffer=thisBuffer;
     if (msgBuffer==NULL) {
         return 1;
     }
@@ -351,6 +414,17 @@ int GPS::str2int(const char* input,uint8_t* output){
     
     *output=inte;
     return 0;
+}
+
+int GPS::flushSerial(){
+    if (thisSerial==NULL) {
+        return -1;
+    }
+    
+    //clear the buffer
+    while (thisSerial->available()) {
+        thisSerial->read();
+    }
 }
 
 
