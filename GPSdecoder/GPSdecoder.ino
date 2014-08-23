@@ -39,34 +39,34 @@
 
 // Include application, user and local libraries
 #include "NEMAGPS.h"
+#include <SofewareSerial.h>
 
+SoftwareSerial gpsSerial(10,11);
 
-// Prototypes
-
-
-// Define variables and constants
-//
-// Brief	Name of the LED
-// Details	Each board has a LED but connected to a different pin
-//
-uint8_t myLED;
-
-
-//
-// Brief	Setup
-
-//
-// Add setup code 
+GPS myGPS(&gpsSerial);
 void setup() {
   
-    ;
+    
+    gpsSerial.begin(9600);
+    Serial.begin(9600);
+    while (!myGPS.isFixed()) {
+        
+        Serial.println(F("GPS not fixed"));
+        delay(3000);
+        myGPS.read();
+    }
 }
 
-//
-// Brief	Loop
-// Details	Call blink
-//
-// Add loop code 
+
 void loop() {
-    ;
+    if(myGPS.read()==0){
+    
+    
+    Serial.println(F("GPS fixed"));
+    Serial.println(myGPS.getLat());
+    Serial.println(myGPS.getLon());
+    
+    }
+    
+    
 }

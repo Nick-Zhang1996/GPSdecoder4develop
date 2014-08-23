@@ -14,7 +14,7 @@
 // Core library - IDE-based
 
 #include "Arduino.h"
-
+#include <SoftwareSerial.h>
 
 #ifndef __NEMA0183parser__NEMAGPS__
 #define __NEMA0183parser__NEMAGPS__
@@ -23,8 +23,8 @@
 class GPS {
     
 public:
-    inline GPS(SoftwareSerial * ts);
-    inline GPS();
+    GPS(SoftwareSerial *ts);
+    GPS();
     
     int read();
     int parseData();

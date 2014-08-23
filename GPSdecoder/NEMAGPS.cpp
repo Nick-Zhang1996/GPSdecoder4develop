@@ -8,7 +8,7 @@
 
 #include "NEMAGPS.h"
 
-GPS::GPS(SoftwareSerial * ts){
+GPS::GPS(SoftwareSerial *ts){
     thisSerial=ts;
     msgBuffer=serialBuffer;
     *head="$GPGGA";
@@ -17,6 +17,7 @@ GPS::GPS(SoftwareSerial * ts){
     *(head+3)="$GPVTG";
     //i'm chinese
     timezone=8;
+    isValid=0;
 }
 
 GPS::GPS(){
@@ -28,6 +29,7 @@ GPS::GPS(){
     *(head+3)="$GPVTG";
     //i'm chinese
     timezone=8;
+    isValid=1;
 }
 
 int GPS::read(){
@@ -43,7 +45,7 @@ int GPS::read(){
             
     //potential bug
     if (thisSerial->peek()!='$') {
-        flushSerial;
+        flushSerial();
     }
             
     int i=0;
@@ -54,7 +56,7 @@ int GPS::read(){
     
     parseData();
     
-    
+    return 0;
 }
 
 int GPS::parseGGA(){
