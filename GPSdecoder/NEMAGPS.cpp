@@ -51,6 +51,10 @@ int GPS::read(){
     int i=0;
     while (thisSerial->available()) {
         *(msgBuffer+i)=thisSerial->read();
+        //actual end message is end of transmission is <CR><LF> (i.e. 0x13 0x10)
+        if (*(msgBuffer+i)==0x10) {
+            break;
+        }
         i++;
     }
     
