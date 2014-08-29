@@ -41,7 +41,7 @@
 #include <Wire.h>
 #include "LiquidCrystal.h"
 #include "NEMAGPS.h"
-#include <SofewareSerial.h>
+#include <SoftwareSerial.h>
 
 /*
  
@@ -56,21 +56,27 @@
 // Connect via i2c, default address #0 (A0-A2 not jumpered)
 LiquidCrystal lcd(0);
 SoftwareSerial gpsSerial(10,11);
-
 GPS myGPS(&gpsSerial);
+
+unsigned long timestamp;
+
+
 void setup() {
   
     
     gpsSerial.begin(9600);
     Serial.begin(9600);
-    
+    timestamp=millis();
+   /*
     // set up the LCD's number of rows and columns:
     lcd.begin(16, 2);
     
-    
+    unsigned long timestamp=millis();
     
     while (!myGPS.isFixed()) {
-        
+        myGPS.read();
+        if (millis()>timestamp+3000)
+        {
         Serial.println(F("GPS not fixed"));
         Serial.println(myGPS.getSateNumber());
         lcd.setCursor(0, 0);
@@ -78,32 +84,46 @@ void setup() {
         lcd.setCursor(0, 1);
         lcd.print("Sate:");
         lcd.print(myGPS.getSateNumber());
+            timestamp=millis();
+        }
         
-        delay(3000);
-        myGPS.read();
     }
+    */
 }
 
 
+
 void loop() {
-    if(myGPS.read()==0){
     
+    int rval;
+    if((rval=myGPS.read())==0){
+    if (millis()>timestamp+1000) {
+        timestamp=millis();
+        /*
+        if (myGPS.isFixed()==0) {
+            
+            
+            
+            
+                Serial.println(F("GPS not fixed"));
+                Serial.println(myGPS.getSateNumber());
+            
+            
+        }else {
+        Serial.println(F("GPS fixed"));
+        Serial.print("Lat");
+        Serial.print(myGPS.getLat());
+        Serial.println(myGPS.getNS());
+        
+        Serial.print("Lon");
+        Serial.print(myGPS.getLon());
+        Serial.println(myGPS.getEW());
+        }
     
-    Serial.println(F("GPS fixed"));
-    Serial.println(myGPS.getLat());
-    Serial.println(myGPS.getLon());
-    
-    
-    
-    lcd.setCursor(0, 0);
-    lcd.print("Lat");
-    lcd.print(myGPS.getLat());
-    lcd.print(myGPS.getNS());
-    
-    lcd.setCursor(0, 1);
-    lcd.print("Lon");
-    lcd.print(myGPS.getLon());
-    lcd.print(myGPS.getEW());
+    */
+        
+    }
+        Serial.println(myGPS.msgBuffer);
         
     }
     
