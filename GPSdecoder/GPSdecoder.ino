@@ -95,11 +95,11 @@ void setup() {
 
 void loop() {
     
-    int rval;
-    if((rval=myGPS.read())==0){
-    if (millis()>timestamp+1000) {
-        timestamp=millis();
-        /*
+  
+    if(myGPS.read()==0){
+
+
+        
         if (myGPS.isFixed()==0) {
             
             
@@ -110,20 +110,20 @@ void loop() {
             
             
         }else {
-        Serial.println(F("GPS fixed"));
-        Serial.print("Lat");
-        Serial.print(myGPS.getLat());
-        Serial.println(myGPS.getNS());
+            Serial.println(F("GPS fixed"));
+            Serial.print("Lat ");
+            Serial.print(myGPS.getLat());
+            Serial.print(myGPS.getNS());
+            Serial.print('\n');
         
-        Serial.print("Lon");
-        Serial.print(myGPS.getLon());
-        Serial.println(myGPS.getEW());
+            Serial.print("Lon ");
+            Serial.print(myGPS.getLon());
+            Serial.println(myGPS.getEW());
         }
     
-    */
+    
         
-    }
-        Serial.println(myGPS.msgBuffer);
+
         
     }
     
